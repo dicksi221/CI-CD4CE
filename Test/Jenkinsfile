@@ -16,7 +16,7 @@ pipeline {
                     def sshServer = env.SSH_SERVER     // Secret pour l'adresse SSH
                     def sshUser = env.SSH_USER         // Secret pour le nom d'utilisateur SSH
                     def sshKey = env.SSH_PRIVATE_KEY    // Secret pour la clé privée SSH
-                    def remoteDir = '/var/www/Compliance/' // Répertoire de destination
+                    def remoteDir = '/var/www/test/' // Répertoire de destination
 
                     // Écrire la clé privée dans un fichier temporaire
                     writeFile file: 'ssh_key', text: sshKey

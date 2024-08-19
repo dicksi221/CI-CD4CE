@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone Repository') {
+            steps {
+                // Cloner votre dépôt GitHub
+                git 'https://github.com/Akorit-Sarl/ComplianceEye'
+            }
+        }
+
+        stage('Deploy to cPanel via SSH') {
+            steps {
+                script {
+                    // Récupérer les secrets Jenkins
+                    def sshServer = env.SSH_SERVER    // Secret pour l'adresse SSH
+                    def sshUser = env.SSH_USER         // Secret pour le nom d'utilisateur SSH
+                    def sshKey = env.SSH_PRIVATE_KEY    // Secret pour la clé privée SSH
+                    def remoteDir = '/var/www/prod/' // Répertoire de destination
+
+                    // Écrire la clé privée dans un fichier temporaire
+                    writeFile file: 'ssh_key', text: sshKey
+                    sh 'chmod 600 ssh_key' // Changer les permissions de la clé
+
+                    // Transférer les fichiers via SCP
+                    sh """
+                    scp -i ssh_key -o StrictHostKeyChecking=no -r ./ $sshUser@$sshServer:$remoteDir
+                    """
+                    
+                    // Nettoyer le fichier de clé temporaire
+                    sh 'rm -f ssh_key'
+                }
+            }
+        }
+    }
+}
